@@ -1,13 +1,9 @@
 import { Component } from 'react';
 import { GlobalStyle } from './GlobalStyle';
-import { Formik, Field, Form } from 'formik';
+import { ContactForm } from './ContactForm/ContactForm';
+import { ContactList } from './ContactList/ContactList';
+import { Filter } from './Filter/Filter';
 import { nanoid } from 'nanoid';
-// import * as Yup from 'yup';
-
-// const contactsSheme = Yup.object().shape({
-//   name: Yup.string().required('Required'),
-//   number: Yup.string().required('Required'),
-// });
 
 export class App extends Component {
   state = {
@@ -18,15 +14,21 @@ export class App extends Component {
       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
     ],
     filter: '',
-    name: '',
-    number: '',
   };
 
   addContact = newConact => {
-    const contact = { ...newConact, id: nanoid() };
-    this.setState(prevState => {
-      return { contacts: [...prevState.contacts, contact] };
-    });
+    const hasName = this.state.contacts.some(
+      contact => contact.name === newConact.name
+    );
+    if (hasName) {
+      alert(`${newConact.name} is already in contacts.`);
+      return;
+    } else {
+      const contact = { ...newConact, id: nanoid() };
+      this.setState(prevState => {
+        return { contacts: [...prevState.contacts, contact] };
+      });
+    }
   };
 
   searchContact = newSearch => {
@@ -35,62 +37,25 @@ export class App extends Component {
     });
   };
 
-  render() {
-    const { contacts, filter } = this.state;
-
-    const visibleContacts = contacts.filter(contact => {
-      const hasFilteredName = contact.name
-        .toLowerCase()
-        .includes(filter.toLowerCase());
-
-      return hasFilteredName;
+  deleteContact = ContactId => {
+    this.setState(prevState => {
+      return {
+        contacts: prevState.contacts.filter(
+          contact => contact.id !== ContactId
+        ),
+      };
     });
+  };
 
+  render() {
     return (
       <div>
         <h1>Phonebook</h1>
-        <Formik
-          initialValues={{
-            name: '',
-            number: '',
-          }}
-          // validationSchema={contactsSheme}
-          onSubmit={(values, actions) => {
-            this.addContact(values);
-            actions.resetForm();
-          }}
-        >
-          <Form>
-            <label>
-              Name
-              <Field name="name" />
-            </label>
-            <label>
-              Number
-              <Field name="number" />
-            </label>
-            <button type="submit">Add contact</button>
-          </Form>
-        </Formik>
-        <div>
-          <h2>Contacts</h2>
-          <p>Find contact by name</p>
-          <input
-            type="text"
-            name="search"
-            placeholder="Type name"
-            onChange={evt => this.searchContact(evt.target.value)}
-          />
-          {this.state.contacts.length > 0 && (
-            <ul>
-              {visibleContacts.map(contact => (
-                <li key={contact.id}>
-                  {contact.name}: {contact.number}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <ContactForm OnSubmitForm={this.addContact} />
+
+        <h2>Contacts</h2>
+        <Filter OnSearch={this.searchContact} />
+        <ContactList ContactInfo={this.state} OnDelete={this.deleteContact} />
 
         <GlobalStyle />
       </div>
