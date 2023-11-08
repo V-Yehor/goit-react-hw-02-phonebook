@@ -13,7 +13,7 @@ const contactsSheme = Yup.object().shape({
   number: Yup.string().required('Required'),
 });
 
-export const ContactForm = ({ OnSubmitForm }) => {
+export const ContactForm = ({ onSubmitForm }) => {
   return (
     <Formik
       initialValues={{
@@ -22,7 +22,7 @@ export const ContactForm = ({ OnSubmitForm }) => {
       }}
       validationSchema={contactsSheme}
       onSubmit={(values, actions) => {
-        OnSubmitForm(values);
+        onSubmitForm(values);
         actions.resetForm();
       }}
     >

@@ -1,6 +1,6 @@
 import { FilterText } from './Filter.styled';
 
-export const Filter = ({ OnSearch }) => {
+export const Filter = ({ onSetFilter, currentFilter }) => {
   return (
     <>
       <FilterText>Find contact by name</FilterText>
@@ -8,7 +8,8 @@ export const Filter = ({ OnSearch }) => {
         type="text"
         name="search"
         placeholder="Type name"
-        onChange={evt => OnSearch(evt.target.value)}
+        value={currentFilter}
+        onChange={evt => onSetFilter(evt.target.value)}
       />
     </>
   );

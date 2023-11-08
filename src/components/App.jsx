@@ -31,7 +31,7 @@ export class App extends Component {
     }
   };
 
-  searchContact = newSearch => {
+  setFilter = newSearch => {
     this.setState(prevState => {
       return { filter: newSearch };
     });
@@ -48,14 +48,30 @@ export class App extends Component {
   };
 
   render() {
+    const { contacts, filter } = this.state;
+
+    const visibleContacts = contacts.filter(contact => {
+      const hasFilteredName = contact.name
+        .toLowerCase()
+        .includes(filter.toLowerCase());
+
+      return hasFilteredName;
+    });
+
     return (
       <div>
         <h1>Phonebook</h1>
-        <ContactForm OnSubmitForm={this.addContact} />
+        <ContactForm onSubmitForm={this.addContact} />
 
         <h2>Contacts</h2>
-        <Filter OnSearch={this.searchContact} />
-        <ContactList ContactInfo={this.state} OnDelete={this.deleteContact} />
+        <Filter
+          onSetFilter={this.setFilter}
+          currentFilter={this.state.filter}
+        />
+        <ContactList
+          contactInfo={visibleContacts}
+          onDelete={this.deleteContact}
+        />
 
         <GlobalStyle />
       </div>
